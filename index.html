@@ -612,13 +612,20 @@ function getImgUrl(id) {
   return IMG_MAP[id] || '';
 }
 function renderMD(text) {
+  // Protect existing <img> tags from being escaped
+  const imgTags = [];
+  text = text.replace(/<img\s+[^>]+>/g, function(match) {
+    imgTags.push(match);
+    return '\x00IMG' + (imgTags.length - 1) + '\x00';
+  });
   // Replace [img:ID_xxx] with actual image tags
   text = text.replace(/\[img:(ID_[^\]]+)\]/g, function(match, id) {
     const src = IMG_MAP[id];
     if (src) return '<img src="' + src + '" style="max-width:300px;border-radius:8px;margin:8px 0;display:block" loading="lazy">';
     return match;
   });
-  return text
+  // Escape HTML (XSS safety), then restore protected img tags
+  text = text
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
@@ -626,6 +633,11 @@ function renderMD(text) {
     .replace(/^- (.+)$/gm, '<span style="display:block;padding-left:16px">\u2022 $1</span>')
     .replace(/^\d+\. (.+)$/gm, '<span style="display:block;padding-left:16px">$&</span>')
     .replace(/\n/g, '<br>');
+  // Restore protected img tags
+  imgTags.forEach(function(tag, i) {
+    text = text.replace('\x00IMG' + i + '\x00', tag);
+  });
+  return text;
 }
 
 // ========== Chat Functions ==========
