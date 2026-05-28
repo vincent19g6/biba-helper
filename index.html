@@ -325,9 +325,8 @@ a{color:var(--accent);text-decoration:none;transition:color var(--duration-fast)
   </div>
   <div class="header-right">
     <span id="apiStatus" style="font-size:12px;color:var(--text3);display:flex;align-items:center;gap:6px">
-      <span style="width:8px;height:8px;border-radius:50%;background:var(--red);display:inline-block"></span>未连接
+      <span style="width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block"></span>已就绪
     </span>
-    <button class="btn btn-outline btn-sm" onclick="toggleApiModal()">API 设置</button>
   </div>
 </div>
 
@@ -338,17 +337,6 @@ a{color:var(--accent);text-decoration:none;transition:color var(--duration-fast)
   <div class="tab" data-tab="guide" onclick="switchTab('guide')"><span class="tab-icon">&#x1F4CB;</span>购机指南</div>
 </div>
 
-<div class="modal-overlay" id="apiModal">
-  <div class="modal">
-    <h3>&#x1F511; DeepSeek API 设置</h3>
-    <p class="modal-hint">你的 API Key 仅存储在浏览器本地，不会发送到任何第三方服务器（仅发送至 DeepSeek API 官方）。<br>如无 API Key，可在 <a href="https://platform.deepseek.com/api_keys" target="_blank">DeepSeek 控制台</a> 申请。</p>
-    <input type="password" id="apiKeyInput" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx" onkeydown="if(event.key==='Enter')saveApiKey()">
-    <div class="modal-actions">
-      <button class="btn btn-outline btn-sm" onclick="toggleApiModal()">取消</button>
-      <button class="btn btn-accent btn-sm" onclick="saveApiKey()">保存</button>
-    </div>
-  </div>
-</div>
 
 <div class="toast" id="toast"></div>
 
@@ -512,8 +500,6 @@ let testAnswers = {};
 
 // ========== Init ==========
 document.addEventListener('DOMContentLoaded', () => {
-  const key = localStorage.getItem('deepseek_api_key');
-  if (key) updateApiStatus(true);
   loadChatHistory();
   initKB();
   initTest();
@@ -551,30 +537,6 @@ function showToast(msg, type='success') {
   t.textContent = msg;
   t.className = 'toast show toast-' + type;
   setTimeout(() => t.classList.remove('show'), 2500);
-}
-
-// ========== API Key ==========
-function toggleApiModal() {
-  document.getElementById('apiModal').classList.toggle('show');
-  if (document.getElementById('apiModal').classList.contains('show')) {
-    const key = localStorage.getItem('deepseek_api_key');
-    document.getElementById('apiKeyInput').value = key || '';
-  }
-}
-function saveApiKey() {
-  const key = document.getElementById('apiKeyInput').value.trim();
-  if (!key) { showToast('请输入 API Key', 'error'); return; }
-  localStorage.setItem('deepseek_api_key', key);
-  updateApiStatus(true);
-  toggleApiModal();
-  showToast('API Key 已保存');
-}
-function updateApiStatus(ok) {
-  const el = document.getElementById('apiStatus');
-  el.innerHTML = ok
-    ? '<span style="width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block"></span>已连接'
-    : '<span style="width:8px;height:8px;border-radius:50%;background:var(--red);display:inline-block"></span>未连接';
-}
 
 // ========== Knowledge Search (RAG) ==========
 function searchKnowledge(query) {
@@ -725,8 +687,7 @@ function sendMessage() {
   const msg = input.value.trim();
   if (!msg || isStreaming) return;
 
-  const key = localStorage.getItem('deepseek_api_key');
-  if (!key) { toggleApiModal(); return; }
+  // API Key 已内置，用户无需填写
 
   const welcome = document.getElementById('chatWelcome');
   if (welcome) welcome.style.display = 'none';
@@ -750,14 +711,30 @@ function sendMessage() {
   ];
   messages[messages.length - 1] = { role: 'user', content: fullMsg };
 
-  fetch('https://api.deepseek.com/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key.trim().replace(/[^ -~]/g, '') },
-    body: JSON.stringify({
+  // 内置 API Key，用户无需填写。先尝试 Worker 代理，不可用时回退直连
+  const BUILTIN_KEY = 'sk-fda87e7a58834d358ffb0433fa69b50c';
+  const WORKER_URL = 'https://biba-helper.864344417.workers.dev';
+  const DIRECT_URL = 'https://api.deepseek.com/chat/completions';
+  const reqBody = JSON.stringify({
       model: 'deepseek-chat', messages, stream: true,
       temperature: 0.7, max_tokens: 2048
-    })
-  }).then(async resp => {
+    });
+  const reqOpts = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: reqBody };
+
+  const tryFetch = async () => {
+    // 先尝试 Worker（国内可能被墙）
+    try {
+      const resp = await fetch(WORKER_URL, reqOpts);
+      if (resp.ok) return resp;
+      throw new Error('worker_fail');
+    } catch(e) {
+      // 回退直连 DeepSeek
+      reqOpts.headers['Authorization'] = 'Bearer ' + BUILTIN_KEY;
+      return await fetch(DIRECT_URL, reqOpts);
+    }
+  };
+
+  tryFetch().then(async resp => {
     if (!resp.ok) {
       const err = await resp.text();
       throw new Error(resp.status + ': ' + err);
@@ -792,10 +769,10 @@ function sendMessage() {
     saveChatHistory();
   }).catch(err => {
     let hint = err.message;
-    if (err.message.includes('Failed to fetch') && location.protocol === 'file:') {
-      hint = '网络请求被浏览器拦截。你是通过双击文件打开的（file://协议），浏览器出于安全策略会阻止跨域请求。<br><br><b>解决方法：</b>请在文件所在文件夹打开终端，运行以下命令启动本地服务器后，用浏览器访问 <a href="http://localhost:8080/index-v3.0.html" target="_blank">http://localhost:8080/index-v3.0.html</a>：<br><code style="background:var(--bg);padding:4px 8px;border-radius:4px;display:inline-block;margin-top:4px">npx -y http-server -p 8080 --cors -c-1</code>';
-    } else if (err.message.includes('401') || err.message.includes('Authentication')) {
-      hint = 'API Key 无效或已过期，请点击右上角「API 设置」重新填写。<br><a href="https://platform.deepseek.com/api_keys" target="_blank">前往 DeepSeek 控制台申请 →</a>';
+    if (err.message.includes('Failed to fetch')) {
+      hint = '网络连接失败，请检查网络后重试。';
+    } else if (err.message.includes('429')) {
+      hint = '请求太频繁，请稍后再试。每人每分钟最多 20 次，每天最多 200 次。';
     }
     msgEl.querySelector('.msg-bubble').innerHTML = '<span style="color:var(--red)">&#x274C; ' + hint + '</span>';
   }).finally(() => {
