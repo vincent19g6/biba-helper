@@ -711,30 +711,24 @@ function sendMessage() {
   ];
   messages[messages.length - 1] = { role: 'user', content: fullMsg };
 
-  // 内置 API Key，用户无需填写。先尝试 Worker 代理，不可用时回退直连
+  // 内置 API Key，用户无需填写
   const BUILTIN_KEY = 'sk-fda87e7a58834d358ffb0433fa69b50c';
-  const WORKER_URL = 'https://biba-helper.864344417.workers.dev';
-  const DIRECT_URL = 'https://api.deepseek.com/chat/completions';
-  const reqBody = JSON.stringify({
+  const API_URL = 'https://api.deepseek.com/chat/completions';
+
+  // 带超时的 fetch
+  const ctrl = new AbortController();
+  const timeout = setTimeout(() => ctrl.abort(), 15000);
+
+  fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + BUILTIN_KEY },
+    body: JSON.stringify({
       model: 'deepseek-chat', messages, stream: true,
       temperature: 0.7, max_tokens: 2048
-    });
-  const reqOpts = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: reqBody };
-
-  const tryFetch = async () => {
-    // 先尝试 Worker（国内可能被墙）
-    try {
-      const resp = await fetch(WORKER_URL, reqOpts);
-      if (resp.ok) return resp;
-      throw new Error('worker_fail');
-    } catch(e) {
-      // 回退直连 DeepSeek
-      reqOpts.headers['Authorization'] = 'Bearer ' + BUILTIN_KEY;
-      return await fetch(DIRECT_URL, reqOpts);
-    }
-  };
-
-  tryFetch().then(async resp => {
+    }),
+    signal: ctrl.signal
+  }).then(async resp => {
+    clearTimeout(timeout);
     if (!resp.ok) {
       const err = await resp.text();
       throw new Error(resp.status + ': ' + err);
@@ -768,9 +762,12 @@ function sendMessage() {
     chatHistory.push({ role: 'assistant', content: fullText });
     saveChatHistory();
   }).catch(err => {
+    clearTimeout(timeout);
     let hint = err.message;
-    if (err.message.includes('Failed to fetch')) {
-      hint = '网络连接失败，请检查网络后重试。';
+    if (err.name === 'AbortError') {
+      hint = '请求超时（15秒），请检查网络连接后重试。';
+    } else if (err.message.includes('Failed to fetch')) {
+      hint = '网络连接失败，请检查网络后重试。<br>提示：此功能需要联网，请确保网络通畅。';
     } else if (err.message.includes('429')) {
       hint = '请求太频繁，请稍后再试。每人每分钟最多 20 次，每天最多 200 次。';
     }
