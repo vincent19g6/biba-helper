@@ -217,6 +217,62 @@ a{color:var(--accent);text-decoration:none;transition:color var(--duration-fast)
 /* Hardware table header */
 .hw-table-header{padding:6px 12px;font-size:11px;color:var(--text3);font-family:var(--font-mono);background:rgba(99,102,241,.04);border-radius:6px;margin:6px 0;border:1px solid rgba(99,102,241,.08);white-space:nowrap;overflow-x:auto}
 
+/* Hardware guide intro card */
+.hw-guide-intro{background:linear-gradient(135deg,rgba(99,102,241,.06),rgba(168,85,247,.06));border:1px solid rgba(99,102,241,.12);border-radius:var(--radius);padding:16px 20px;margin-bottom:16px;font-size:14px;line-height:1.8;color:var(--text2)}
+.hw-guide-intro strong{color:var(--accent)}
+.hw-guide-intro .hw-icon{font-size:20px;margin-right:8px;vertical-align:middle}
+
+/* Hardware tip cards (good/bad) */
+.hw-tip{border-radius:var(--radius);padding:14px 18px;margin-bottom:10px;font-size:13px;line-height:1.7;display:flex;align-items:flex-start;gap:10px}
+.hw-tip-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.hw-tip-good{background:rgba(16,163,74,.08);border:1px solid rgba(16,163,74,.15);color:#15803d}
+.hw-tip-bad{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15);color:#dc2626}
+.hw-tip-info{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.15);color:var(--accent)}
+.hw-tip strong{font-weight:700}
+.hw-tip ul{margin:4px 0 0 0;padding-left:18px}
+.hw-tip li{margin-bottom:2px}
+
+/* CPU suffix badge grid */
+.hw-suffix-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin:12px 0}
+.hw-suffix-badge{padding:10px 14px;border-radius:var(--radius);font-size:13px;display:flex;flex-direction:column;gap:2px;border:1px solid var(--border)}
+.hw-suffix-badge .suf-name{font-weight:700;font-size:15px;font-family:var(--font-mono)}
+.hw-suffix-badge .suf-desc{color:var(--text2);font-size:12px}
+.hw-suffix-badge.suf-good{border-color:rgba(16,163,74,.2);background:rgba(16,163,74,.06)}
+.hw-suffix-badge.suf-good .suf-name{color:#15803d}
+.hw-suffix-badge.suf-mid{border-color:rgba(34,211,238,.2);background:rgba(34,211,238,.06)}
+.hw-suffix-badge.suf-mid .suf-name{color:#0891b2}
+.hw-suffix-badge.suf-low{border-color:rgba(107,114,128,.2);background:rgba(107,114,128,.06)}
+.hw-suffix-badge.suf-low .suf-name{color:#4b5563}
+.hw-suffix-badge.suf-high{border-color:rgba(245,158,11,.2);background:rgba(245,158,11,.06)}
+.hw-suffix-badge.suf-high .suf-name{color:#d97706}
+
+/* GPU position row */
+.hw-gpu-row{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid rgba(99,102,241,.06);font-size:13px}
+.hw-gpu-row:last-child{border-bottom:none}
+.hw-gpu-tag{padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;flex-shrink:0}
+.hw-gpu-tag.tag-low{background:rgba(107,114,128,.15);color:#4b5563}
+.hw-gpu-tag.tag-mid{background:rgba(34,211,238,.15);color:#0891b2}
+.hw-gpu-tag.tag-high{background:rgba(245,158,11,.15);color:#d97706}
+.hw-gpu-tag.tag-flag{background:rgba(168,85,247,.15);color:#7c3aed}
+.hw-gpu-tag.tag-sweet{background:rgba(99,102,241,.15);color:var(--accent)}
+.hw-gpu-models{color:var(--text2);font-family:var(--font-mono);font-size:12px}
+.hw-gpu-desc{color:var(--text3);font-size:12px;margin-left:auto}
+
+/* Brand position table inside brand-card */
+.hw-brand-row{display:grid;grid-template-columns:70px 1fr 60px;gap:8px;padding:6px 0;border-bottom:1px solid rgba(99,102,241,.06);font-size:12px;align-items:center}
+.hw-brand-row:last-child{border-bottom:none}
+.hw-brand-row .bb-label{color:var(--text2);font-weight:600}
+.hw-brand-row .bb-series{color:var(--text3)}
+.hw-brand-row .bb-pos{padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;text-align:center}
+.bb-pos.pos-low{background:rgba(107,114,128,.12);color:#4b5563}
+.bb-pos.pos-mid{background:rgba(34,211,238,.12);color:#0891b2}
+.bb-pos.pos-midplus{background:rgba(59,130,246,.12);color:#2563eb}
+.bb-pos.pos-high{background:rgba(245,158,11,.12);color:#d97706}
+.bb-pos.pos-flag{background:rgba(168,85,247,.12);color:#7c3aed}
+
+/* Sub-section title */
+.hw-sub-title{font-size:16px;font-weight:700;margin:20px 0 10px 0;padding-left:12px;border-left:3px solid var(--accent);display:flex;align-items:center;gap:8px}
+
 /* ========== Test ========== */
 .test-container{max-width:640px;margin:0 auto}
 .test-progress{display:flex;align-items:center;gap:12px;margin-bottom:20px}
@@ -1251,83 +1307,289 @@ function showKBSection(id) {
     html += renderChipBrand('NVIDIA', '#76B900', nvidiaSec);
 
   } else if (id === 'hardware') {
-    html += '<div class="kb-section-title">硬件杂项科普</div>';
-    html += '<div class="card card-accent" style="margin-bottom:16px"><p style="color:var(--text2);font-size:13px">&#x26A0;&#xFE0F; 仅适用于消遣时间，不适用于消费决策。打发碎片时间可以，鉴别机型优劣不行。</p></div>';
+    html += '<div class="kb-section-title">硬件科普 - 小白友好版</div>';
     var hwItems = KB.hardware;
-    // 分组：屏幕 / CPU(intel) / CPU(AMD) / dGPU / NPU / 品牌产品线(联想/华硕/惠普/戴尔/微星/宏碁)
-    var hwSections = [];
-    var curSec = { title: '总览', items: [], color: '#6b7280' };
+
+    // ====== 1. 屏幕科普 ======
+    html += '<div class="hw-sub-title"><span style="font-size:18px">&#x1F4F1;</span> 笔电屏幕选购指南</div>';
+    html += '<div class="hw-guide-intro"><span class="hw-icon">&#x1F4A1;</span>买电脑第一眼看屏幕，<strong>记住一个标准</strong>：100% sRGB + DC调光 + 120Hz。满足这三点的屏幕，日常使用不会有明显短板。</div>';
+
+    html += '<div class="hw-tip hw-tip-good"><span class="hw-tip-icon">&#x2705;</span><div><strong>好屏幕标准（认准这三个）</strong><ul><li><strong>100% sRGB 色域</strong> — 颜色准确，不偏色不泛白</li><li><strong>DC 调光（或超高频 PWM）</strong> — 不伤眼，长时间看屏幕不容易头晕</li><li><strong>120Hz 及以上刷新率</strong> — 滑动流畅，回手机会不适应</li></ul></div></div>';
+
+    html += '<div class="hw-tip hw-tip-bad"><span class="hw-tip-icon">&#x1F6AB;</span><div><strong>垃圾屏幕避雷（看到就跑）</strong><ul><li><strong>低色域（45% NTSC / 60% sRGB）</strong> — 颜色像蒙了一层灰</li><li><strong>OLED</strong> — 亮度不均、字体发虚、物理烧屏、低频PWM闪瞎眼</li><li><strong>MiniLED</strong> — 同样低频PWM，闪眼警告</li></ul></div></div>';
+
+    html += '<div class="hw-tip hw-tip-info"><span class="hw-tip-icon">&#x1F4DD;</span><div><strong>进阶参数（好屏幕的基础上再看）</strong><ul><li><strong>分辨率</strong>：FHD（1920x1200）为最低标准，2K更细腻</li><li><strong>亮度</strong>：350尼特起步，越高越好</li><li><strong>色深</strong>：8bit为底，8bit+FRC很棒，原生10bit更强</li><li><strong>比例</strong>：16:10 和 3:2 的显示面积吊打 16:9</li></ul></div></div>';
+
+    // 屏幕详细参数（折叠）
+    var screenItems = [];
+    var inScreen = false;
     hwItems.forEach(function(item) {
       var fl = item.split('\n')[0].trim();
-      // 检测新分组标题
-      if (/^intel移动端/.test(fl)) {
-        if (curSec.items.length || curSec.title !== '总览') hwSections.push(curSec);
-        curSec = { title: 'Intel 移动端 CPU', items: [], color: '#0071C5' };
-      } else if (/^AMD移动端/.test(fl)) {
-        if (curSec.items.length || curSec.title !== '总览') hwSections.push(curSec);
-        curSec = { title: 'AMD 移动端 CPU', items: [], color: '#ED1C24' };
-      } else if (/^移动端 dGPU/.test(fl)) {
-        if (curSec.items.length || curSec.title !== '总览') hwSections.push(curSec);
-        curSec = { title: '移动端独立显卡 (dGPU)', items: [], color: '#76B900' };
-      } else if (/^NPU$/.test(fl)) {
-        if (curSec.items.length || curSec.title !== '总览') hwSections.push(curSec);
-        curSec = { title: 'NPU（神经网络处理器）', items: [], color: '#f59e0b' };
-      } else if (/^联想（家用）/.test(fl)) {
-        if (curSec.items.length || curSec.title !== '总览') hwSections.push(curSec);
-        curSec = { title: '联想 产品线定位', items: [], color: '#E2231A' };
-      } else if (/^华硕（/.test(fl) && !/^华硕（TUF/.test(fl) && !/^华硕（ROG/.test(fl) && !/^华硕（ProArt/.test(fl) && !/^华硕（商用）/.test(fl)) {
-        if (curSec.items.length || curSec.title !== '总览') hwSections.push(curSec);
-        curSec = { title: '华硕 产品线定位', items: [], color: '#00549E' };
-      } else if (/^惠普/.test(fl) && /产品定位|系列定位/.test(fl)) {
-        if (curSec.items.length || curSec.title !== '总览') hwSections.push(curSec);
-        curSec = { title: '惠普 产品线定位', items: [], color: '#0096D6' };
-      } else if (/^戴尔（家用）/.test(fl)) {
-        if (curSec.items.length || curSec.title !== '总览') hwSections.push(curSec);
-        curSec = { title: '戴尔 产品线定位', items: [], color: '#007DB8' };
-      } else if (/^戴尔（商用）/.test(fl)) {
-        if (curSec.items.length) hwSections.push(curSec);
-        curSec = { title: '戴尔 商用 & Alienware', items: [], color: '#6F2C91' };
-      } else if (/^微星/.test(fl) && /产品定位/.test(fl)) {
-        if (curSec.items.length || curSec.title !== '总览') hwSections.push(curSec);
-        curSec = { title: '微星 产品线定位', items: [], color: '#FF0000' };
-      } else if (/^宏碁/.test(fl) && /产品定位/.test(fl)) {
-        if (curSec.items.length || curSec.title !== '总览') hwSections.push(curSec);
-        curSec = { title: '宏碁 产品线定位', items: [], color: '#83B81A' };
-      } else if (/^华硕（TUF/.test(fl)) {
-        if (curSec.items.length) hwSections.push(curSec);
-        curSec = { title: '华硕 TUF & ROG & ProArt', items: [], color: '#00549E' };
-      }
-      curSec.items.push(item);
+      if (/屏幕|sRGB|NTSC|OLED|MiniLED|PWM|DC|色域|亮度|刷新|分辨率|比例/.test(fl)) { inScreen = true; }
+      if (/^intel移动端/.test(fl)) { inScreen = false; }
+      if (inScreen) screenItems.push(item);
     });
-    if (curSec.items.length) hwSections.push(curSec);
-
-    hwSections.forEach(function(sec) {
-      html += '<div class="brand-card expanded" style="border-left:3px solid ' + sec.color + '">';
+    if (screenItems.length > 5) {
+      html += '<div class="brand-card" style="border-left:3px solid #6b7280">';
       html += '<div class="brand-card-header" onclick="this.parentElement.classList.toggle(\'expanded\')">';
-      html += '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + sec.color + ';margin-right:8px"></span>';
-      html += '<strong>' + escapeHtml(sec.title) + '</strong>';
-      html += '<span style="font-size:12px;color:var(--text3);margin-left:auto">' + sec.items.length + ' 条</span>';
+      html += '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#6b7280;margin-right:8px"></span>';
+      html += '<strong>屏幕详细参数对照表</strong>';
+      html += '<span style="font-size:12px;color:var(--text3);margin-left:auto">点击展开</span>';
       html += '<span style="margin-left:8px;color:var(--text3);font-size:11px">&#x25BC;</span></div>';
       html += '<div class="brand-card-body">';
-      sec.items.forEach(function(item) {
-        var lines = item.split('\n');
-        var fl = lines[0].trim();
-        // 跳过标题行（和当前section标题相同）
-        if (fl === sec.title || fl.startsWith('【')) return;
-        // 表头行
-        if (/产品定位|系列定位|品牌定位|TDP\s|屏幕俗称|标称色域|CPU\s|命名\s|年份\s|工艺制程|分辨率|亮度|比例/.test(fl) && fl.length > 15) {
+      screenItems.forEach(function(item) {
+        var fl = item.split('\n')[0].trim();
+        if (fl.startsWith('【')) return;
+        if (/屏幕俗称|标称色域/.test(fl) && fl.length > 15) {
+          html += '<div class="hw-table-header">' + escapeHtml(fl) + '</div>';
+        } else if (fl.length > 3) {
+          html += '<div class="sw-item">' + escapeHtml(fl) + '</div>';
+        }
+      });
+      html += '</div></div>';
+    }
+
+    // ====== 2. CPU 科普 ======
+    html += '<div class="hw-sub-title"><span style="font-size:18px">&#x1F504;</span> 笔电 CPU 选购指南</div>';
+    html += '<div class="hw-guide-intro"><span class="hw-icon">&#x1F4A1;</span>CPU（处理器）是电脑的大脑。<strong>看型号后缀就能判断定位</strong>：后缀不同，性能和功耗天差地别。别被型号数字忽悠，同代CPU里不同后缀才是关键。</div>';
+
+    // --- Intel ---
+    html += '<div class="hw-tip hw-tip-info"><span class="hw-tip-icon">&#x1F4F1;</span><div><strong>Intel CPU 后缀速查</strong></div></div>';
+    html += '<div class="hw-suffix-grid">';
+    html += '<div class="hw-suffix-badge suf-low"><span class="suf-name">U（后缀）</span><span class="suf-desc">低压/亮机CPU，要性能没性能，要续航没多少续航，笔记本上看到U后缀基本是低端机</span></div>';
+    html += '<div class="hw-suffix-badge suf-mid"><span class="suf-name">H（后缀）</span><span class="suf-desc">标压CPU，中性能，核心规模中等。常见于核显本、小钢炮、轻薄砖头，兼顾性能和续航</span></div>';
+    html += '<div class="hw-suffix-badge suf-high"><span class="suf-name">HX（后缀）</span><span class="suf-desc">高性能CPU，电老虎。性能猛但续航寄，常见于主流/甜品/高端砖头游戏本</span></div>';
+    html += '<div class="hw-suffix-badge suf-low"><span class="suf-name">V（后缀）</span><span class="suf-desc">仿苹果M系列的高集成SOC，Intel的"创新"之作，综合性能还不如Ultra 2代，大抵是死了</span></div>';
+    html += '<div class="hw-suffix-badge suf-low"><span class="suf-name">N（前缀）</span><span class="suf-desc">低功耗处理器，亮机CPU。主供欧美日韩市场及山寨平板，大陆消费者不用关注</span></div>';
+    html += '</div>';
+
+    html += '<div class="hw-tip hw-tip-bad"><span class="hw-tip-icon">&#x26A0;&#xFE0F;</span><div><strong>避坑提醒</strong><br>数字越大不一定越强！Intel酷睿14代其实是<strong>13代马甲</strong>，酷睿Ultra 1代也是挤牙膏。<br>认准 <strong>Ultra 2代及以上</strong> 才是真正换代。</div></div>';
+
+    // Intel 详细参数表（折叠）
+    var intelItems = [], inIntel = false;
+    hwItems.forEach(function(item) {
+      var fl = item.split('\n')[0].trim();
+      if (/^intel移动端/.test(fl)) { inIntel = true; return; }
+      if (/^AMD移动端/.test(fl)) { inIntel = false; }
+      if (inIntel) intelItems.push(item);
+    });
+    if (intelItems.length > 3) {
+      html += '<div class="brand-card" style="border-left:3px solid #0071C5">';
+      html += '<div class="brand-card-header" onclick="this.parentElement.classList.toggle(\'expanded\')">';
+      html += '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#0071C5;margin-right:8px"></span>';
+      html += '<strong>Intel 移动端 CPU 详细参数</strong>';
+      html += '<span style="font-size:12px;color:var(--text3);margin-left:auto">点击展开</span>';
+      html += '<span style="margin-left:8px;color:var(--text3);font-size:11px">&#x25BC;</span></div>';
+      html += '<div class="brand-card-body">';
+      intelItems.forEach(function(item) {
+        var fl = item.split('\n')[0].trim();
+        if (fl.startsWith('【')) return;
+        if (/产品定位|TDP\s|年份\s|工艺制程|代号/.test(fl) && fl.length > 15) {
           html += '<div class="hw-table-header">' + escapeHtml(fl) + '</div>';
           return;
         }
-        // 定位描述行（包含子品牌/系列/定位）
-        var locMatch = fl.match(/^(低功耗|低性能|中性能|高性能|掌机|模仿|丐|低端|中端|高端|旗舰|轻薄|Gaming|便携|商用|家用)/);
+        var locMatch = fl.match(/^(低功耗|低性能|中性能|高性能|模仿)/);
         if (locMatch) {
-          var desc = fl.replace(/(低功耗|低性能|中性能|高性能|掌机|模仿|丐|低端|中端|高端|旗舰|轻薄|Gaming|便携|商用|家用)/, '');
-          var locColor = fl.match(/高端|旗舰/) ? '#f59e0b' : fl.match(/中性能|中端/) ? '#22d3ee' : fl.match(/低端|丐|低功耗|低性能/) ? '#6b7280' : '#10b981';
-          html += '<div class="sw-item" style="border:none"><span style="color:' + locColor + ';font-weight:600;min-width:50px">' + escapeHtml(locMatch[0]) + '</span> <span>' + escapeHtml(desc || lines.slice(1).join(' ')) + '</span></div>';
+          var desc = fl.replace(/(低功耗|低性能|中性能|高性能|模仿)/, '');
+          var locColor = fl.match(/高性能/) ? '#d97706' : fl.match(/中性能/) ? '#0891b2' : '#4b5563';
+          html += '<div class="sw-item" style="border:none"><span style="color:' + locColor + ';font-weight:600;min-width:50px">' + escapeHtml(locMatch[0]) + '</span> <span>' + escapeHtml(desc || '') + '</span></div>';
           return;
         }
-        // 普通条目
+        if (/^(H系列|HX系列|U系列|N系列)$/.test(fl)) {
+          html += '<div style="font-weight:700;font-size:13px;color:var(--accent);padding:6px 0 2px 0">' + escapeHtml(fl) + '</div>';
+          return;
+        }
+        if (fl.length > 3 && !/^—/.test(fl)) {
+          html += '<div class="sw-item">' + escapeHtml(fl) + '</div>';
+        }
+      });
+      html += '</div></div>';
+    }
+
+    // --- AMD ---
+    html += '<div class="hw-tip hw-tip-info" style="margin-top:16px"><span class="hw-tip-icon">&#x1F4F1;</span><div><strong>AMD CPU 后缀速查</strong><br>AMD 的命名逻辑类似 Intel，同样看后缀判断定位。<br><strong>HX</strong> = 高性能电老虎，<strong>H/HS</strong> = 中性能标压，<strong>U</strong> = 低性能低压<br>注意：<strong>AMD 没有"马甲"问题</strong>，每一代基本都有实质性升级（除了部分马甲款）。</div></div>';
+
+    // AMD 详细参数表（折叠）
+    var amdItems = [], inAMD = false;
+    hwItems.forEach(function(item) {
+      var fl = item.split('\n')[0].trim();
+      if (/^AMD移动端/.test(fl)) { inAMD = true; return; }
+      if (/^移动端 dGPU/.test(fl)) { inAMD = false; }
+      if (inAMD) amdItems.push(item);
+    });
+    if (amdItems.length > 3) {
+      html += '<div class="brand-card" style="border-left:3px solid #ED1C24">';
+      html += '<div class="brand-card-header" onclick="this.parentElement.classList.toggle(\'expanded\')">';
+      html += '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ED1C24;margin-right:8px"></span>';
+      html += '<strong>AMD 移动端 CPU 详细参数</strong>';
+      html += '<span style="font-size:12px;color:var(--text3);margin-left:auto">点击展开</span>';
+      html += '<span style="margin-left:8px;color:var(--text3);font-size:11px">&#x25BC;</span></div>';
+      html += '<div class="brand-card-body">';
+      amdItems.forEach(function(item) {
+        var fl = item.split('\n')[0].trim();
+        if (fl.startsWith('【')) return;
+        if (/TDP\s|年份\s|工艺制程|架构|代号/.test(fl) && fl.length > 15) {
+          html += '<div class="hw-table-header">' + escapeHtml(fl) + '</div>';
+          return;
+        }
+        var locMatch = fl.match(/^(低功耗|低性能|中性能|高性能|掌机特化)/);
+        if (locMatch) {
+          var desc = fl.replace(/(低功耗|低性能|中性能|高性能|掌机特化)/, '');
+          var locColor = fl.match(/高性能/) ? '#d97706' : fl.match(/中性能/) ? '#0891b2' : '#4b5563';
+          html += '<div class="sw-item" style="border:none"><span style="color:' + locColor + ';font-weight:600;min-width:70px">' + escapeHtml(locMatch[0]) + '</span> <span>' + escapeHtml(desc || '') + '</span></div>';
+          return;
+        }
+        if (/^(HX系列|U\/HS\/H)$/.test(fl)) {
+          html += '<div style="font-weight:700;font-size:13px;color:var(--accent);padding:6px 0 2px 0">' + escapeHtml(fl) + '</div>';
+          return;
+        }
+        if (fl.length > 3 && !/^—/.test(fl)) {
+          html += '<div class="sw-item">' + escapeHtml(fl) + '</div>';
+        }
+      });
+      html += '</div></div>';
+    }
+
+    // ====== 3. 独立显卡科普 ======
+    html += '<div class="hw-sub-title"><span style="font-size:18px">&#x1F3AE;</span> 笔电独立显卡 (dGPU)</div>';
+    html += '<div class="hw-guide-intro"><span class="hw-icon">&#x1F4A1;</span>独显（独立显卡）主要影响<strong>游戏和AI算力</strong>。如果你不打游戏、不做AI开发，<strong>核显完全够用</strong>，别多花钱买独显。<br>独显看 <strong>RTX 后面的数字</strong>，数字越大越强。</div>';
+
+    var gpuItems = [], inGPU = false;
+    hwItems.forEach(function(item) {
+      var fl = item.split('\n')[0].trim();
+      if (/^移动端 dGPU/.test(fl)) { inGPU = true; return; }
+      if (/^NPU$/.test(fl)) { inGPU = false; }
+      if (inGPU) gpuItems.push(item);
+    });
+
+    // 简洁定位表
+    html += '<div class="brand-card expanded" style="border-left:3px solid #76B900">';
+    html += '<div class="brand-card-header" onclick="this.parentElement.classList.toggle(\'expanded\')">';
+    html += '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#76B900;margin-right:8px"></span>';
+    html += '<strong>NVIDIA 移动端显卡定位</strong>';
+    html += '<span style="margin-left:8px;color:var(--text3);font-size:11px">&#x25BC;</span></div>';
+    html += '<div class="brand-card-body">';
+
+    var gpuPosData = [
+      { pos: '低端', cls: 'tag-low', models: 'RTX 2050 / 3050 / 5050', desc: '韭菜机标配，不建议买' },
+      { pos: '中端', cls: 'tag-mid', models: 'RTX 4060 / 5060', desc: '主流砖头常见' },
+      { pos: '甜品', cls: 'tag-sweet', models: 'RTX 3070 Ti / 5070 Ti', desc: '甜品砖头标配' },
+      { pos: '高端', cls: 'tag-high', models: 'RTX 4080 / 5080', desc: '高端砖头标配' },
+      { pos: '旗舰', cls: 'tag-flag', models: 'RTX 4090 / 5090', desc: '土豪专属' }
+    ];
+    gpuPosData.forEach(function(g) {
+      html += '<div class="hw-gpu-row">';
+      html += '<span class="hw-gpu-tag ' + g.cls + '">' + g.pos + '</span>';
+      html += '<span class="hw-gpu-models">' + g.models + '</span>';
+      html += '<span class="hw-gpu-desc">' + g.desc + '</span>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+
+    // NPU
+    html += '<div class="hw-tip hw-tip-bad" style="margin-top:12px"><span class="hw-tip-icon">&#x1F9E9;</span><div><strong>NPU（神经网络处理器）</strong><br>产品定位：鸡肋。骗钱，骗投资。不用管它。</div></div>';
+
+    // AMD/Intel 移动端 dGPU 表（折叠）
+    var gpuOther = [];
+    gpuItems.forEach(function(item) {
+      var fl = item.split('\n')[0].trim();
+      if (/低端|中端|甜品|高端|旗舰/.test(fl)) return; // 已在上面展示
+      if (fl.length > 5) gpuOther.push(item);
+    });
+    if (gpuOther.length > 0) {
+      html += '<div class="brand-card" style="border-left:3px solid #76B900">';
+      html += '<div class="brand-card-header" onclick="this.parentElement.classList.toggle(\'expanded\')">';
+      html += '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#76B900;margin-right:8px"></span>';
+      html += '<strong>其他显卡说明</strong>';
+      html += '<span style="font-size:12px;color:var(--text3);margin-left:auto">点击展开</span>';
+      html += '<span style="margin-left:8px;color:var(--text3);font-size:11px">&#x25BC;</span></div>';
+      html += '<div class="brand-card-body">';
+      gpuOther.forEach(function(item) {
+        var fl = item.split('\n')[0].trim();
+        if (fl.length > 3) html += '<div class="sw-item">' + escapeHtml(fl) + '</div>';
+      });
+      html += '</div></div>';
+    }
+
+    // ====== 4. 品牌产品线定位 ======
+    html += '<div class="hw-sub-title"><span style="font-size:18px">&#x1F3E2;</span> 各品牌产品线定位</div>';
+    html += '<div class="hw-guide-intro"><span class="hw-icon">&#x1F4A1;</span>同品牌不同系列，价格可能差 <strong>3~5 倍</strong>。联想拯救者和小新完全是两个世界的东西。<strong>定位高 ≈ 价格高 ≠ 产品好</strong>。别被"高端定位"四个字忽悠了。</div>';
+
+    // 按品牌分组
+    var brandGroups = [];
+    var curBrand = null;
+    hwItems.forEach(function(item) {
+      var fl = item.split('\n')[0].trim();
+      // 检测品牌分组标题
+      var bMatch = fl.match(/^(联想（家用）|联想（来酷）|联想（ThinkBook）|联想（ThinkPad）|联想（昭阳）|联想（瑞天）|华硕|华硕（TUF|华硕（ROG|华硕（ProArt|华硕（商用）|惠普（家用|惠普（商用）|惠普（Gaming|戴尔（家用）|戴尔（商用）|戴尔（Alienware|微星|宏碁)\s*(.*?)$/);
+      if (!bMatch) {
+        bMatch = fl.match(/^(联想（家用）|联想（来酷）|联想（ThinkBook）|联想（ThinkPad）|联想（昭阳）|联想（瑞天）|华硕|华硕（TUF|华硕（ROG|华硕（ProArt|华硕（商用）|惠普（家用|惠普（商用）|惠普（Gaming|戴尔（家用）|戴尔（商用）|戴尔（Alienware|微星|宏碁)/);
+      }
+      if (bMatch) {
+        if (curBrand) brandGroups.push(curBrand);
+        curBrand = { title: fl.replace(/\s+定位高.*$/, '').trim(), items: [], color: '#6b7280' };
+        // Assign color
+        if (/联想/.test(fl)) curBrand.color = '#E2231A';
+        else if (/华硕/.test(fl)) curBrand.color = '#00549E';
+        else if (/惠普/.test(fl)) curBrand.color = '#0096D6';
+        else if (/戴尔/.test(fl)) curBrand.color = '#007DB8';
+        else if (/微星/.test(fl)) curBrand.color = '#FF0000';
+        else if (/宏碁/.test(fl)) curBrand.color = '#83B81A';
+      } else if (curBrand) {
+        curBrand.items.push(item);
+      }
+    });
+    if (curBrand) brandGroups.push(curBrand);
+
+    brandGroups.forEach(function(brand) {
+      if (brand.items.length === 0) return;
+      // Skip empty brand sections
+      var hasContent = brand.items.some(function(it) { return it.split('\n')[0].trim().length > 5 && !it.split('\n')[0].trim().startsWith('【'); });
+      if (!hasContent) return;
+
+      html += '<div class="brand-card" style="border-left:3px solid ' + brand.color + '">';
+      html += '<div class="brand-card-header" onclick="this.parentElement.classList.toggle(\'expanded\')">';
+      html += '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + brand.color + ';margin-right:8px"></span>';
+      html += '<strong>' + escapeHtml(brand.title) + '</strong>';
+      html += '<span style="font-size:12px;color:var(--text3);margin-left:auto">点击展开</span>';
+      html += '<span style="margin-left:8px;color:var(--text3);font-size:11px">&#x25BC;</span></div>';
+      html += '<div class="brand-card-body">';
+
+      brand.items.forEach(function(item) {
+        var fl = item.split('\n')[0].trim();
+        if (fl.startsWith('【')) return;
+        // Skip table headers
+        if (/产品定位|系列定位|品牌定位/.test(fl) && fl.length > 15) {
+          html += '<div class="hw-table-header">' + escapeHtml(fl) + '</div>';
+          return;
+        }
+        // Position row (contains 丐/低端/中端/高端/旗舰)
+        var posMatch = fl.match(/^(丐|低端|中端|中端\+|中端-|高端|高端\+|高端-|旗舰|便携|轻薄Gaming|Gaming|家用|商用)/);
+        if (posMatch) {
+          var posText = posMatch[0];
+          var posCls = 'pos-mid';
+          if (/旗舰|高端\+/.test(posText)) posCls = 'pos-flag';
+          else if (/高端/.test(posText)) posCls = 'pos-high';
+          else if (/中端\+/.test(posText)) posCls = 'pos-midplus';
+          else if (/中端/.test(posText)) posCls = 'pos-mid';
+          else if (/低端|丐/.test(posText)) posCls = 'pos-low';
+          else if (/轻薄Gaming/.test(posText)) posCls = 'pos-high';
+          else if (/Gaming/.test(posText)) posCls = 'pos-mid';
+
+          var rest = fl.replace(/^(丐|低端|中端\+?|中端-|高端\+?|高端-|旗舰|便携|轻薄Gaming|Gaming|家用|商用)\s*/, '');
+          // Extract series name and description
+          var parts = rest.split(/\s{2,}/).filter(function(p){ return p.trim().length > 0; });
+          var seriesName = parts[0] || rest;
+          var desc = parts.slice(1).join(' / ') || '';
+
+          html += '<div class="hw-brand-row">';
+          html += '<span class="bb-label">' + escapeHtml(seriesName) + '</span>';
+          html += '<span class="bb-series">' + escapeHtml(desc) + '</span>';
+          html += '<span class="bb-pos ' + posCls + '">' + escapeHtml(posText) + '</span>';
+          html += '</div>';
+          return;
+        }
+        // Other lines
         if (fl.length > 3) {
           html += '<div class="sw-item">' + escapeHtml(fl) + '</div>';
         }
