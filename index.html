@@ -440,8 +440,9 @@ const SYSTEM_PROMPT = `你是百度贴吧「笔记本吧」吧主的分身，一
 - 推荐机型时给2-3个选项并说明优缺点
 - 所有推荐必须基于知识库数据，不编造不存在的机型
 - 保持笔吧老哥的说话风格，可以犀利但不能不礼貌
-## 表情包使用
-你可以使用表情包增强回复效果。使用格式：[img:图片ID]
+## 表情包使用（必须严格遵守）
+你可以使用表情包增强回复效果。唯一正确的使用格式是：[img:图片ID]
+绝对禁止直接输出 HTML 的 <img> 标签，也禁止输出转义后的 &lt;img&gt; 标签。必须使用 [img:图片ID] 格式。
 可用的表情包图片ID列表（每个ID对应一张表情包图片）：
 - ID_02A45A59A2AA4D5FA6A551FD8786ED2F
 - ID_0357DEFD9A5948C68E2E9B764A7AF65C
@@ -612,19 +613,17 @@ function getImgUrl(id) {
   return IMG_MAP[id] || '';
 }
 function renderMD(text) {
-  // Protect existing <img> tags from being escaped
+  // Step 1: Unescape any already-escaped <img> tags from AI output
+  text = text.replace(/&lt;img\s[\s\S]*?&gt;/g, function(match) {
+    return match.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+  });
+  // Step 2: Protect existing <img> tags from being escaped
   const imgTags = [];
   text = text.replace(/<img\s+[^>]+>/g, function(match) {
     imgTags.push(match);
     return '\x00IMG' + (imgTags.length - 1) + '\x00';
   });
-  // Replace [img:ID_xxx] with actual image tags
-  text = text.replace(/\[img:(ID_[^\]]+)\]/g, function(match, id) {
-    const src = IMG_MAP[id];
-    if (src) return '<img src="' + src + '" style="max-width:300px;border-radius:8px;margin:8px 0;display:block" loading="lazy">';
-    return match;
-  });
-  // Escape HTML (XSS safety), then restore protected img tags
+  // Step 3: Escape HTML (XSS safety)
   text = text
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
@@ -633,7 +632,13 @@ function renderMD(text) {
     .replace(/^- (.+)$/gm, '<span style="display:block;padding-left:16px">\u2022 $1</span>')
     .replace(/^\d+\. (.+)$/gm, '<span style="display:block;padding-left:16px">$&</span>')
     .replace(/\n/g, '<br>');
-  // Restore protected img tags
+  // Step 4: Replace [img:ID_xxx] with actual image tags (after escaping so they won't be escaped)
+  text = text.replace(/\[img:(ID_[^\]]+)\]/g, function(match, id) {
+    const src = IMG_MAP[id];
+    if (src) return '<img src="' + src + '" style="max-width:300px;border-radius:8px;margin:8px 0;display:block" loading="lazy">';
+    return match;
+  });
+  // Step 5: Restore protected img tags
   imgTags.forEach(function(tag, i) {
     text = text.replace('\x00IMG' + i + '\x00', tag);
   });
