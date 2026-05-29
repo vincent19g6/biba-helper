@@ -441,9 +441,10 @@ const SYSTEM_PROMPT = `你是百度贴吧「笔记本吧」吧主的分身，一
 - 所有推荐必须基于知识库数据，不编造不存在的机型
 - 保持笔吧老哥的说话风格，可以犀利但不能不礼貌
 ## 表情包使用（必须严格遵守）
-你可以使用表情包增强回复效果。唯一正确的使用格式是：[img:图片ID]
-绝对禁止直接输出 HTML 的 <img> 标签，也禁止输出转义后的 &lt;img&gt; 标签。必须使用 [img:图片ID] 格式。
-可用的表情包图片ID列表（每个ID对应一张表情包图片）：
+你可以使用表情包增强回复效果。唯一正确的使用格式是：[img:ID_XXXXXXXX]
+其中 ID_ 是固定前缀，必须保留。例如：[img:ID_2EBDF95E85A34E60A825447678B05936]
+绝对禁止直接输出 HTML 的 <img> 标签，也禁止输出转义后的 &lt;img&gt; 标签。必须使用 [img:ID_...] 格式。
+可用的表情包图片ID列表（每个ID包含 ID_ 前缀）：
 - ID_02A45A59A2AA4D5FA6A551FD8786ED2F
 - ID_0357DEFD9A5948C68E2E9B764A7AF65C
 - ID_07E70CCF8EA3427AA8F05E72050085EB
@@ -633,11 +634,14 @@ function renderMD(text) {
     .replace(/^- (.+)$/gm, '<span style="display:block;padding-left:16px">\u2022 $1</span>')
     .replace(/^\d+\. (.+)$/gm, '<span style="display:block;padding-left:16px">$&</span>')
     .replace(/\n/g, '<br>');
-  // Step 4: Replace [img:ID_xxx] with actual image tags (after escaping so they won't be escaped)
-  text = text.replace(/\[img:(ID_[^\]]+)\]/g, function(match, id) {
-    const src = IMG_MAP[id];
+  // Step 4: Replace [img:xxx] with actual image tags (after escaping so they won't be escaped)
+  // Support both [img:ID_xxx] and [img:xxx] (auto-add ID_ prefix if missing)
+  // If image not found, silently remove the tag instead of showing raw text
+  text = text.replace(/\[img:([^\]]+)\]/g, function(match, id) {
+    const fullId = id.startsWith('ID_') ? id : 'ID_' + id;
+    const src = IMG_MAP[fullId];
     if (src) return '<img src="' + src + '" style="max-width:300px;border-radius:8px;margin:8px 0;display:block" loading="lazy">';
-    return match;
+    return ''; // silently remove if not found
   });
   // Step 5: Restore protected img tags
   imgTags.forEach(function(tag, i) {
