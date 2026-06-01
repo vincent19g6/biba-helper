@@ -73,7 +73,7 @@ a{color:var(--accent);text-decoration:none;transition:color var(--duration-fast)
 .btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);opacity:0;transition:opacity var(--duration-fast)}
 .btn:hover::after{opacity:1}
 .btn:active{transform:scale(.97)}
-.btn-accent{background:linear-gradient(135deg,var(--accent),#4F46E5);color:#fff;box-shadow:0 2px 12px rgba(99,102,241,.25)}.btn-accent:hover{box-shadow:0 4px 20px rgba(99,102,241,.35);transform:translateY(-1px)}
+.btn-accent{background:linear-gradient(135deg,var(--accent),#4F46E5);color:#fff;box-shadow:0 2px 12px rgba(99,102,241,.25)}.btn-accent:hover{box-shadow:0 4px 20px rgba(99,102,241,.35);transform:translateY(-1px)}.btn-accent:disabled{pointer-events:none}.send-spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px}@keyframes spin{to{transform:rotate(360deg)}}
 .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text2)}.btn-outline:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
 .btn-sm{padding:6px 14px;font-size:12px}
 .btn-blue{background:linear-gradient(135deg,var(--blue),#2563eb);color:#fff;box-shadow:0 2px 12px rgba(59,130,246,.2)}
@@ -420,7 +420,7 @@ a{color:var(--accent);text-decoration:none;transition:color var(--duration-fast)
       <div class="chat-resize-handle top-handle" id="chatResizeTop"></div>
       <div class="chat-input-row">
         <textarea class="chat-input" id="chatInput" placeholder="描述你的购机需求，或问任何关于笔记本的问题..." rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
-        <button class="btn btn-accent" onclick="sendMessage()" id="sendBtn">发送</button>
+        <button class="btn btn-accent" onclick="sendMessage()" id="sendBtn"><span id="sendBtnText">发送</span></button>
       </div>
       <div class="chat-resize-handle" id="chatResizeHandle"></div>
     </div>
@@ -750,8 +750,20 @@ function sendMessage() {
   const fullMsg = msg + knowledge;
 
   isStreaming = true;
-  document.getElementById('sendBtn').textContent = '思考中...';
+  const sendBtn = document.getElementById('sendBtn');
+  const sendBtnText = document.getElementById('sendBtnText');
+  sendBtn.disabled = true;
+  sendBtn.style.opacity = '0.6';
+  sendBtn.style.cursor = 'not-allowed';
+  sendBtnText.innerHTML = '<span class="send-spinner"></span>思考中';
   const msgEl = appendMsg('ai', '');
+  // 3秒内未收到首包时，显示等待提示
+  let firstChunkReceived = false;
+  const waitHint = setTimeout(() => {
+    if (!firstChunkReceived) {
+      msgEl.querySelector('.msg-bubble').innerHTML = '<span style="color:var(--text-muted,#888);font-size:13px">&#x1F4E1; 正在连接 AI 服务器，请稍候...</span>';
+    }
+  }, 3000);
 
   const messages = [
     { role: 'system', content: SYSTEM_PROMPT },
@@ -763,9 +775,9 @@ function sendMessage() {
   const BUILTIN_KEY = 'sk-fda87e7a58834d358ffb0433fa69b50c';
   const API_URL = 'https://api.deepseek.com/chat/completions';
 
-  // 带超时的 fetch
+  // 带超时的 fetch（延长至 30s 适配国内访问 DeepSeek 的延迟）
   const ctrl = new AbortController();
-  const timeout = setTimeout(() => ctrl.abort(), 15000);
+  const timeout = setTimeout(() => ctrl.abort(), 30000);
 
   fetch(API_URL, {
     method: 'POST',
@@ -800,6 +812,10 @@ function sendMessage() {
           try {
             const json = JSON.parse(data);
             const delta = json.choices?.[0]?.delta?.content || '';
+            if (delta && !firstChunkReceived) {
+              firstChunkReceived = true;
+              clearTimeout(waitHint);
+            }
             fullText += delta;
             msgEl.querySelector('.msg-bubble').innerHTML = renderMD(fullText);
             scrollChat();
@@ -811,9 +827,10 @@ function sendMessage() {
     saveChatHistory();
   }).catch(err => {
     clearTimeout(timeout);
+    clearTimeout(waitHint);
     let hint = err.message;
     if (err.name === 'AbortError') {
-      hint = '请求超时（15秒），请检查网络连接后重试。';
+      hint = '请求超时（30秒），请检查网络连接后重试。';
     } else if (err.message.includes('Failed to fetch')) {
       hint = '网络连接失败，请检查网络后重试。<br>提示：此功能需要联网，请确保网络通畅。';
     } else if (err.message.includes('429')) {
@@ -821,8 +838,14 @@ function sendMessage() {
     }
     msgEl.querySelector('.msg-bubble').innerHTML = '<span style="color:var(--red)">&#x274C; ' + hint + '</span>';
   }).finally(() => {
+    clearTimeout(waitHint);
     isStreaming = false;
-    document.getElementById('sendBtn').textContent = '发送';
+    const sendBtn = document.getElementById('sendBtn');
+    const sendBtnText = document.getElementById('sendBtnText');
+    sendBtn.disabled = false;
+    sendBtn.style.opacity = '';
+    sendBtn.style.cursor = '';
+    sendBtnText.textContent = '发送';
   });
 }
 
