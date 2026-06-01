@@ -407,7 +407,7 @@ a{color:var(--accent);text-decoration:none;transition:color var(--duration-fast)
         <h2>&#x1F44B; 欢迎来到笔吧购机助手</h2>
         <p>我是笔记本吧吧主的分身，资深数码发烧友<br>有什么购机问题，尽管问</p>
         <div class="quick-tags" id="quickTags">
-          <div class="quick-tag" onclick="quickAsk('我预算5000，日常办公用，求推荐')">5000元办公本推荐</div>
+          <div class="quick-tag" onclick="quickAsk('我预算5000，日常办公用，怎么选')">5000元办公本怎么选</div>
           <div class="quick-tag" onclick="quickAsk('大学计算机专业用什么电脑？')">计算机专业用什么？</div>
           <div class="quick-tag" onclick="quickAsk('核显本和独显本怎么选？')">核显本 vs 独显本</div>
           <div class="quick-tag" onclick="quickAsk('有哪些品牌或者机型是坑不能买的？')">避坑黑名单</div>
@@ -893,7 +893,7 @@ function clearChatHistory() {
   var w = document.createElement('div');
   w.className = 'chat-welcome';
   w.id = 'chatWelcome';
-  w.innerHTML = '<h2>&#x1F44B; 欢迎来到笔吧购机助手</h2><p>我是笔记本吧吧主的分身，资深数码发烧友<br>有什么购机问题，尽管问</p><div class="quick-tags" id="quickTags"><div class="quick-tag" onclick="quickAsk(\'我预算5000，日常办公用，求推荐\')">5000元办公本推荐</div><div class="quick-tag" onclick="quickAsk(\'大学计算机专业用什么电脑？\')">计算机专业用什么？</div><div class="quick-tag" onclick="quickAsk(\'核显本和独显本怎么选？\')">核显本 vs 独显本</div><div class="quick-tag" onclick="quickAsk(\'有哪些品牌或者机型是坑不能买的？\')">避坑黑名单</div><div class="quick-tag" onclick="quickAsk(\'买笔记本电脑需要关注哪些参数？\')">关注哪些参数</div><div class="quick-tag" onclick="quickAsk(\'线上线下哪里买电脑靠谱？\')">哪里买靠谱？</div></div>';
+  w.innerHTML = '<h2>&#x1F44B; 欢迎来到笔吧购机助手</h2><p>我是笔记本吧吧主的分身，资深数码发烧友<br>有什么购机问题，尽管问</p><div class="quick-tags" id="quickTags"><div class="quick-tag" onclick="quickAsk(\'我预算5000，日常办公用，怎么选\')">5000元办公本怎么选</div><div class="quick-tag" onclick="quickAsk(\'大学计算机专业用什么电脑？\')">计算机专业用什么？</div><div class="quick-tag" onclick="quickAsk(\'核显本和独显本怎么选？\')">核显本 vs 独显本</div><div class="quick-tag" onclick="quickAsk(\'有哪些品牌或者机型是坑不能买的？\')">避坑黑名单</div><div class="quick-tag" onclick="quickAsk(\'买笔记本电脑需要关注哪些参数？\')">关注哪些参数</div><div class="quick-tag" onclick="quickAsk(\'线上线下哪里买电脑靠谱？\')">哪里买靠谱？</div></div>';
   document.getElementById('chatMessages').appendChild(w);
   document.getElementById('chatToolbar').style.display = 'none';
 }
