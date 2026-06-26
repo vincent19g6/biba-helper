@@ -114,7 +114,7 @@ a{color:var(--accent);text-decoration:none;transition:color var(--duration-fast)
 .chat-input-area{padding:10px 0 12px;background:transparent;display:flex;flex-direction:column;flex-shrink:0}
 .chat-input-row{display:flex;gap:10px;align-items:flex-end;background:var(--bg2);border:1px solid rgba(99,102,241,.15);border-radius:var(--radius);padding:6px 6px 6px 16px;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:border-color var(--duration-fast),box-shadow var(--duration-fast)}
 .chat-input-row:focus-within{border-color:rgba(99,102,241,.4);box-shadow:0 0 0 3px rgba(99,102,241,.08)}
-.chat-input{flex:1;background:none;border:none;padding:10px 0;color:var(--text);font-size:14px;resize:none;min-height:38px;max-height:50vh;font-family:var(--font-sans);line-height:1.5}
+.chat-input{flex:1;background:none;border:none;padding:10px 0;color:var(--text);font-size:14px;resize:none;min-height:68px;max-height:50vh;font-family:var(--font-sans);line-height:1.5}
 .chat-input:focus{outline:none}
 .chat-input::placeholder{color:var(--text-muted)}
 .chat-resize-handle{height:8px;display:flex;align-items:center;justify-content:center;cursor:row-resize;opacity:0;transition:opacity var(--duration-normal);user-select:none;-webkit-user-select:none}
@@ -420,7 +420,7 @@ a{color:var(--accent);text-decoration:none;transition:color var(--duration-fast)
     <div class="chat-input-area">
       <div class="chat-resize-handle top-handle" id="chatResizeTop"></div>
       <div class="chat-input-row">
-        <textarea class="chat-input" id="chatInput" placeholder="描述你的购机需求，或问任何关于笔记本的问题..." rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
+        <textarea class="chat-input" id="chatInput" placeholder="描述你的购机需求，或问任何关于笔记本的问题..." rows="3" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
         <button class="btn btn-accent" onclick="sendMessage()" id="sendBtn"><span id="sendBtnText">发送</span></button>
       </div>
       <div class="chat-resize-handle" id="chatResizeHandle"></div>
