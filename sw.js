@@ -1,5 +1,5 @@
 // 笔吧购机助手 - Service Worker
-const CACHE_NAME = 'biba-helper-v19';
+const CACHE_NAME = 'biba-helper-v20';
 
 // 需要预缓存的文件列表
 const PRECACHE_URLS = [

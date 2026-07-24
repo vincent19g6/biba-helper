@@ -773,7 +773,7 @@ function sendMessage() {
   messages[messages.length - 1] = { role: 'user', content: fullMsg };
 
   // 内置 API Key，用户无需填写
-  const BUILTIN_KEY = 'sk-fda87e7a58834d358ffb0433fa69b50c';
+  const BUILTIN_KEY = 'sk-f9773848d27c4ff380b764425e8b627e';
   const API_URL = 'https://api.deepseek.com/chat/completions';
 
   // 带超时的 fetch（延长至 30s 适配国内访问 DeepSeek 的延迟）
