@@ -1,5 +1,5 @@
 // 笔吧购机助手 - Service Worker
-const CACHE_NAME = 'biba-helper-v20';
+const CACHE_NAME = 'biba-helper-v21';
 
 // 需要预缓存的文件列表
 const PRECACHE_URLS = [
@@ -30,7 +30,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 请求拦截：缓存优先，网络回退
+// 请求拦截：HTML 网络优先，其他资源缓存优先
 self.addEventListener('fetch', (event) => {
   // 只处理 GET 请求
   if (event.request.method !== 'GET') return;
@@ -39,12 +39,30 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (url.hostname !== self.location.hostname) return;
 
+  const isHtml = url.pathname === '/' || url.pathname.endsWith('/index.html') || url.pathname.endsWith('.html');
+
+  // HTML 文件：网络优先，避免更新后被旧缓存卡住
+  if (isHtml) {
+    event.respondWith(
+      fetch(event.request).then((response) => {
+        if (response.ok && response.type === 'basic') {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        }
+        return response;
+      }).catch(() => {
+        return caches.match(event.request);
+      })
+    );
+    return;
+  }
+
+  // 其他静态资源：缓存优先，网络回退
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
 
       return fetch(event.request).then((response) => {
-        // 成功获取后缓存（仅本站资源）
         if (response.ok && response.type === 'basic') {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
